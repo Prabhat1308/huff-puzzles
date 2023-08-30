@@ -9,5 +9,14 @@
 */
 
 #define macro MAIN() = takes(0) returns(0) {
+    callvalue // [msg.value] // on stack
+    0x00      // offset [offset,msg.value]
+    mstore    
+    
+    0x20    // 32 bytes to get
+    0x00    // offset
+    return
+
+
     
 }
