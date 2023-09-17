@@ -13,5 +13,41 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+ 
+ 0x00
+ calldataload
+ 0xE0
+ shr
 
+ __FUNC_SIG(multiply) eq multiply jumpi
+ revert
+
+    multiply:
+     MULTIPLY_FUNCTION()
+}
+
+#define macro MULTIPLY_FUNCTION() = takes(0) returns(0) {
+
+ 0x04 calldataload
+ 0x24 calldataload
+ mul
+    
+ 0x00
+ mstore
+ 
+ 0x04 calldataload
+ 0x24 calldataload
+
+ 0x00
+ mload
+ div
+ eq
+ good jumpi
+ revert
+
+ good:
+ 
+ 0x20
+ 0x00
+ return
 }
