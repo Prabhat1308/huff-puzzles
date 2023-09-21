@@ -13,5 +13,15 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+     
+   0x00 calldataload
+   0xE0 shr
+   __FUNC_SIG(value) eq value jumpi
+   revert
+
+   value:
+    0x24 calldataload 0x00 mstore
+    0x04 calldataload
+    __EVENT_HASH(Value) //search more about this
+    0x20 0x00 log2
  }

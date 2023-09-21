@@ -25,5 +25,14 @@
  #define error ZeroArray()
 
  #define macro MAIN() = takes(0) returns(0) {
+    0x00 calldataload
+    0XE0 shr
+    dup1 dup1 dup1 dup1
     
+    __FUNC_SIG(pushh) eq pushh jumpi
+    __FUNC_SIG(popp) eq popp jumpi
+    __FUNC_SIG(read) eq read jumpi
+    __FUNC_SIG(length) eq length jumpi
+    __FUNC_SIG(write) eq write jumpi
+    revert
  }

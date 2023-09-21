@@ -15,4 +15,16 @@
 
  #define macro MAIN() = takes(0) returns(0) {
    
+   0x00 calldataload
+   0xE0 shr
+   __FUNC_SIG(distribute) eq distribute jumpi
+   revert
+
+   distribute:
+    0x24 calldataload
+    dup1 iszero empty jumpi
+    
+
+   empty:
+    revert
  }
