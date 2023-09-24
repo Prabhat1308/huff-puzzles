@@ -11,21 +11,50 @@
 #define function balanceOf(address) payable returns(uint256)
 #define function withdraw(uint256) payable returns()
 
+#define constant SLOT0 = FREE_STORAGE_POINTER()
+
 #define macro MAIN() = takes(0) returns(0) {
     0x00 calldataload
-    0xE0 shr 
-    dup1 dup1
+    0xe0 shr  // [func-sig]
+    dup1 __FUNC_SIG(balanceOf) eq balanceOfJump jumpi
+    __FUNC_SIG(withdraw) eq withdrawJump jumpi
 
-    __FUNC_SIG(balanceOf) eq balanceOf jumpi  
-    __FUNC_SIG(withdraw) eq withdraw jumpi
+    receiveJump:
+        callvalue iszero stopJump jumpi
+        caller 0x00 mstore
+        [SLOT0] 0x20 mstore
+        0x40 0x00 sha3 //[hash-result, func-sig]
+        dup1 //[hash-result, hash-result, func-sig]
+        sload callvalue add //[add-result, hash-result, func-sig]
+        swap1 //[add-result, hash-result, func-sig]
+        sstore //[func-sig]
+        stop //[]
 
-    0x00 callvalue gt receive jumpi
-    0x20 0x00 return
 
-    receive:
+    balanceOfJump:
+        // callvalue 0x00
+        caller 0x00 mstore
+        [SLOT0] 0x20 mstore
+        0x40 0x00 sha3 //[hash-result, func-sig]
+        sload //[loaded-value, func-sig]
+        swap1 pop //[loaded-value]
+        0x00 mstore
+        0x20 0x00 return
 
-    balanceOf:
-   
-    withdraw:
+    withdrawJump:
+        caller 0x00 mstore
+        [SLOT0] 0x20 mstore
+        0x40 0x00 sha3 //[hash-result, func-sig]
+        dup1 //[hash-result, hash-result, func-sig]
+        sload //[loaded-value, hash-result, func-sig]
+        dup1 //[loaded-value, loaded-value, hash-result, func-sig]
+        iszero stopJump jumpi //end tx if value is zero
+        0x00 0x00 0x00 0x00 swap4 caller gas //[loaded-value, hash-result, func-sig]
+        call //[hash-result, func-sig]
+        iszero stopJump jumpi //end call returns zero
+        0x00 swap1 sstore  stop
+
+    stopJump:
+       0x00 0x00 revert
 
 }
